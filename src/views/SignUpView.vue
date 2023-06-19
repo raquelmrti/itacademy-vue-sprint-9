@@ -6,7 +6,3 @@ import SignUpForm from '../components/forms/SignUpForm.vue';
  <h1>Sign up</h1>
  <SignUpForm />
 </template>
-
-<style scoped>
-
-</style>

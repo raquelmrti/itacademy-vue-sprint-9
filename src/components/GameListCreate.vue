@@ -1,3 +1,26 @@
+<script setup>
+import { ref } from "vue";
+import BaseModal from "./BaseModal.vue";
+
+import { useListStore } from "../stores/listStore";
+const listStore = useListStore();
+const { createList } = listStore;
+
+const listTitle = ref("List title");
+const listDescription = ref("List description");
+
+const resetForm = () => {
+  listTitle.value = "";
+  listDescription.value = "";
+};
+
+const onSubmit = () => {
+  const date = new Date().toLocaleString();
+  createList(listTitle.value, listDescription.value, date);
+  resetForm();
+};
+</script>
+
 <template>
   <BaseModal>
     <template #modal-title>
@@ -22,26 +45,3 @@
     </template>
   </BaseModal>
 </template>
-
-<script setup>
-import { ref } from "vue";
-import BaseModal from "./BaseModal.vue";
-
-import { useListStore } from "../stores/listStore";
-const listStore = useListStore();
-const { createList } = listStore;
-
-const listTitle = ref("List title");
-const listDescription = ref("List description");
-
-const resetForm = () => {
-  listTitle.value = "";
-  listDescription.value = "";
-};
-
-const onSubmit = () => {
-  const date = new Date().toLocaleString();
-  createList(listTitle.value, listDescription.value, date);
-  resetForm();
-};
-</script>
