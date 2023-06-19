@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+import { RouterLink } from "vue-router";
+</script>
 
 <template>
   <img src="http://via.placeholder.com/640x360" alt="" />
@@ -9,5 +11,5 @@
     build, share, and explore game collections like never before.
   </p>
 
-  <button>Get started</button>
+  <router-link :to="{ name: 'sign-in' }">Get started</router-link>
 </template>
