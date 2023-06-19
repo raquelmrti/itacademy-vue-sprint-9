@@ -29,12 +29,10 @@ import BaseModal from "./BaseModal.vue";
 
 import { useListStore } from "../stores/listStore";
 const listStore = useListStore();
-const { getLists, createList } = listStore;
+const { createList } = listStore;
 
 const listTitle = ref("List title");
 const listDescription = ref("List description");
-
-getLists()
 
 const resetForm = () => {
   listTitle.value = "";

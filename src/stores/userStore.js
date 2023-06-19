@@ -4,62 +4,71 @@ import {
   updateProfile,
   signInWithEmailAndPassword,
   signOut,
- } from 'firebase/auth'
+  onAuthStateChanged
+} from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 
-export const useUserStore = defineStore('userStore', () => {
-  let userData = null
+export const useUserStore = defineStore('userStore', {
+  state: () => ({
+    userData: null
+  }),
 
-  async function registerUser(displayName, email, password) {
-    try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password)
-
-      // add user display name
+  actions: {
+    updateUserData(user) {
+      this.userData = {
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email
+      }
+    },
+    async registerUser(displayName, email, password) {
       try {
-        await updateProfile(auth.currentUser, {
-          displayName
-        })
+        const { user } = await createUserWithEmailAndPassword(auth, email, password)
+
+        // add user display name
+        try {
+          await updateProfile(auth.currentUser, {
+            displayName
+          })
+        } catch (error) {
+          console.error('Error updating profile: ', error)
+        }
+        this.updateUserData(user)
       } catch (error) {
-        console.error('Error updating profile: ', error)
+        console.error('Error creating user:', error)
       }
-
-      userData = {
-        uid: user.uid,
-        displayName: user.displayName,
-        email: user.email
+    },
+    async signInUser(email, password) {
+      try {
+        const { user } = await signInWithEmailAndPassword(auth, email, password)
+        this.updateUserData(user)
+      } catch (error) {
+        console.error('Error signing user in: ', error)
       }
-    } catch (error) {
-      console.error('Error creating user:' , error)
-    }
-    console.log(userData, userData.uid);
-  }
-
-  async function signInUser(email, password) {
-    try {
-      const { user } = await signInWithEmailAndPassword(auth, email, password)
-      userData = {
-        uid: user.uid,
-        displayName: user.displayName,
-        email: user.email
+    },
+    async logoutUser() {
+      try {
+        await signOut(auth)
+        this.userData = null
+      } catch (error) {
+        console.error('Error logging out the user: ', error)
       }
-    } catch (error) {
-      console.error("Error signing user in: ", error);
-    }
-  }
+    },
 
-  async function logoutUser() {
-    try {
-      await signOut(auth)
-      userData = null
-    } catch (error) {
-      console.error("Error logging out the user: ", error);
+    getCurrentUser() {
+      return new Promise((resolve, reject) => {
+        const unsubcribe = onAuthStateChanged(
+          auth,
+          (user) => {
+            if (user) {
+              this.updateUserData(user)
+            }
+            resolve(user)
+          },
+          (e) => reject(e)
+        )
+        unsubcribe()
+      })
     }
-  }
-
-  return {
-    userData,
-    registerUser,
-    signInUser,
-    logoutUser,
   }
 })

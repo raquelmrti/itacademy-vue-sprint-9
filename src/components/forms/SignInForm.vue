@@ -19,6 +19,7 @@
 import { ref } from "vue";
 import { useUserStore } from "@/stores/userStore.js";
 import { RouterLink } from "vue-router";
+import router from "@/router/index"
 
 const userStore = useUserStore();
 const { signInUser } = userStore;
@@ -28,5 +29,6 @@ const password = ref("testpassword123456789");
 
 const handleSubmit = () => {
   signInUser(email.value, password.value);
+  router.push("/home")
 };
 </script>
