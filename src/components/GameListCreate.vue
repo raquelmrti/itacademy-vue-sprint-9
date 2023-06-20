@@ -4,10 +4,14 @@ import BaseModal from "./BaseModal.vue";
 
 import { useListStore } from "../stores/listStore";
 const listStore = useListStore();
-const { createList } = listStore;
 
 const listTitle = ref("List title");
 const listDescription = ref("List description");
+
+const emit = defineEmits(["closeModal"]);
+const close = () => {
+  emit("closeModal");
+};
 
 const resetForm = () => {
   listTitle.value = "";
@@ -16,8 +20,9 @@ const resetForm = () => {
 
 const onSubmit = () => {
   const date = new Date().toLocaleString();
-  createList(listTitle.value, listDescription.value, date);
+  listStore.createList(listTitle.value, listDescription.value, date);
   resetForm();
+  close();
 };
 </script>
 

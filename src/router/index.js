@@ -3,6 +3,8 @@ import LandingView from '@/views/LandingView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
 import HomeView from '@/views/HomeView.vue'
+import GameListContentView from '@/views/GameListContentView.vue'
+
 
 
 const router = createRouter({
@@ -27,6 +29,16 @@ const router = createRouter({
       path: '/home',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/my-lists',
+      name: 'my-lists',
+      component: HomeView
+    },
+    {
+      path: '/my-lists/:id',
+      name: 'list',
+      component: GameListContentView
     }
   ]
 })

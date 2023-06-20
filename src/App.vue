@@ -11,19 +11,20 @@ const listStore = useListStore();
 import { useUserStore } from "./stores/userStore";
 const userStore = useUserStore();
 
-onMounted(async () => {
-  await userStore.getCurrentUser();
-});
+// onMounted(async () => {
+//   await userStore.getCurrentUser();
+// });
 
 </script>
 
 <template>
   <div>
     <h1>VAMOS A VER</h1>
-    <p>userData from userStore: {{ userStore.userData }}</p>
-    <p>getCurrentUser from userStore: {{ userStore.userData }}</p>
-    <p>lists from listStore: {{ listStore.lists }}</p>
-    <p>current user from Auth: {{ auth.currentUser }}</p>
+    <!-- <p>userData from userStore: {{ userStore.userData }}</p>
+    <p>getCurrentUser from userStore: {{ userStore.userData }}</p> -->
+    <!-- <p>lists from listStore: {{ listStore.lists }}</p> -->
+    <!-- <p>current user from Auth: {{ auth.currentUser }}</p> -->
+    <!-- <p>computed lists from listStore: {{ listStore.sortedLists }}</p> -->
   </div>
   <hr>
   <!-- <TheNavbar v-if=""/> -->

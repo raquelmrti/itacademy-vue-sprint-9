@@ -1,17 +1,22 @@
 <script setup>
-defineProps({
+const props = defineProps({
   lists: Array,
 });
 
-import GameListCard from './GameListCard.vue';
+import GameListCard from "./GameListCard.vue";
+import { computed } from "vue";
+
+const areThereNoLists = computed(() => props.lists.length === 0);
 </script>
 
 <template>
   <div>Lists</div>
   <div>
-    <ul v-if="lists">
+    <ul v-if="!areThereNoLists">
       <li v-for="list of lists" :key="list.listId">
-        <GameListCard :list="list"/>
+        <router-link :to="{ name: 'list', params: { id: list.listId } }">
+          <GameListCard :list="list" />
+        </router-link>
       </li>
     </ul>
     <div v-else>

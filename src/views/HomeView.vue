@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onUnmounted } from "vue";
+import { ref } from "vue";
 import { auth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -15,10 +15,6 @@ onAuthStateChanged(auth, async (user) => {
   if (user) {
     await listStore.getLists(user.uid);
   }
-});
-
-onUnmounted(() => {
-  listStore.$reset();
 });
 </script>
 

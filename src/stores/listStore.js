@@ -1,11 +1,23 @@
 import { defineStore } from 'pinia'
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore/lite'
+import {
+  collection,
+  addDoc,
+  getDocs,
+  getDoc,
+  query,
+  where,
+  doc,
+  deleteDoc
+} from 'firebase/firestore/lite'
 import { auth, listDb } from '../../firebaseConfig'
 
 export const useListStore = defineStore('listStore', {
   state: () => ({
     lists: []
   }),
+  // getters: {
+  //   sortedLists: (state) => state.lists.sort((a, b) => b.creationDate - a.creationDate)
+  // },
   actions: {
     async getLists(userId) {
       this.lists.length = 0
@@ -20,11 +32,14 @@ export const useListStore = defineStore('listStore', {
         console.error('Failed to get lists: ', error)
       }
     },
-    async createList(title, description, date) {
+    getListById(id) {
+      return this.lists.find((list) => list.listId === id)
+    },
+    async createList(listTitle, listDescription, date) {
       try {
         const listObject = {
-          title,
-          description,
+          title: listTitle,
+          description: listDescription,
           creationDate: date,
           lastUpdatedDate: date,
           ownerId: auth.currentUser.uid,
@@ -34,11 +49,29 @@ export const useListStore = defineStore('listStore', {
         const listRef = await addDoc(collection(listDb, 'lists'), listObject)
         this.lists.push({
           ...listObject,
-          id: listRef.id
+          listId: listRef.id
         })
       } catch (error) {
         console.error('Failed to create list: ', error)
       }
+    },
+    async deleteList(listId) {
+      try {
+        const listRef = doc(listDb, 'lists', listId)
+        const listSnap = await getDoc(listRef)
+        if (!listSnap.exists()) {
+          throw new Error("List doesn't exist")
+        }
+        if (listSnap.data().ownerId !== auth.currentUser.uid) {
+          throw new Error('No permission to delete this list')
+        }
+
+        await deleteDoc(listRef)
+        this.lists = this.lists.filter((list) => list.listId !== listId)
+      } catch (error) {
+        console.error('Error deleting list: ', error.message)
+      }
     }
-  }
+  },
+  persist: true
 })
