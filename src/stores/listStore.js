@@ -13,7 +13,8 @@ import { auth, listDb } from '../../firebaseConfig'
 
 export const useListStore = defineStore('listStore', {
   state: () => ({
-    lists: []
+    lists: [],
+    loading: true
   }),
   // getters: {
   //   sortedLists: (state) => state.lists.sort((a, b) => b.creationDate - a.creationDate)
@@ -21,6 +22,7 @@ export const useListStore = defineStore('listStore', {
   actions: {
     async getLists(userId) {
       this.lists.length = 0
+      this.loading = true
 
       try {
         const q = query(collection(listDb, 'lists'), where('ownerId', '==', userId))
@@ -30,12 +32,15 @@ export const useListStore = defineStore('listStore', {
         })
       } catch (error) {
         console.error('Failed to get lists: ', error)
+      } finally {
+        this.loading = false
       }
     },
     getListById(id) {
       return this.lists.find((list) => list.listId === id)
     },
     async createList(listTitle, listDescription, date) {
+      this.loading = true
       try {
         const listObject = {
           title: listTitle,
@@ -53,9 +58,12 @@ export const useListStore = defineStore('listStore', {
         })
       } catch (error) {
         console.error('Failed to create list: ', error)
+      } finally {
+        this.loading = false
       }
     },
     async deleteList(listId) {
+      this.loading = true
       try {
         const listRef = doc(listDb, 'lists', listId)
         const listSnap = await getDoc(listRef)
@@ -70,6 +78,8 @@ export const useListStore = defineStore('listStore', {
         this.lists = this.lists.filter((list) => list.listId !== listId)
       } catch (error) {
         console.error('Error deleting list: ', error.message)
+      } finally {
+        this.loading = false
       }
     }
   },

@@ -20,7 +20,7 @@ For this last Sprint I'll have to make a Vue app with a theme of my choice. Ther
 
 - The solution must be well designed and responsive.
 
-- The solution must be operational without bugs, the mentor being able to carry out a complete user flow (a specific action, if for example it is an e-commerce, would be to carry out the entire purchase process, from entering the website to that goes to payment).
+- The solution must be operational without bugs, and the mentor should be able to carry out a complete user flow (a specific action for an e-commerce, as an example, would be to carry out the entire purchase process, from entering the website to the payment).
 
 
 ## Project Setup

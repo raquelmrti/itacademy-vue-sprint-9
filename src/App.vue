@@ -20,6 +20,7 @@ const userStore = useUserStore();
 <template>
   <div>
     <h1>VAMOS A VER</h1>
+    <p>loading from listStore = {{ listStore.loading }}</p>
     <!-- <p>userData from userStore: {{ userStore.userData }}</p>
     <p>getCurrentUser from userStore: {{ userStore.userData }}</p> -->
     <!-- <p>lists from listStore: {{ listStore.lists }}</p> -->
