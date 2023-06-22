@@ -20,7 +20,7 @@ onAuthStateChanged(auth, async (user) => {
 
 <template>
   <h1>My lists</h1>
-  <GameLists :lists="listStore.lists" />
+  <GameLists />
   <button type="button" @click="showModal = true">Create list</button>
   <GameListCreate v-if="showModal" @closeModal="showModal = false" />
 </template>

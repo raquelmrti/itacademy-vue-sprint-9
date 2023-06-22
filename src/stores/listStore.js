@@ -7,7 +7,8 @@ import {
   query,
   where,
   doc,
-  deleteDoc
+  deleteDoc,
+  updateDoc
 } from 'firebase/firestore/lite'
 import { auth, listDb } from '../../firebaseConfig'
 
@@ -36,8 +37,28 @@ export const useListStore = defineStore('listStore', {
         this.loading = false
       }
     },
-    getListById(id) {
-      return this.lists.find((list) => list.listId === id)
+    async getListById(listId) {
+      if (this.lists.length > 0) {
+        return this.lists.find((list) => list.listId === listId)
+      } else {
+        this.loading = true
+        try {
+          const listRef = doc(listDb, 'lists', listId)
+          const listSnap = await getDoc(listRef)
+          if (!listSnap.exists()) {
+            throw new Error("List doesn't exist")
+          }
+          if (listSnap.data().ownerId !== auth.currentUser.uid) {
+            throw new Error('No permission to get this list')
+          }
+
+          return listSnap.data()
+        } catch (error) {
+          console.error('Failed to get list: ', error)
+        } finally {
+          this.loading = false
+        }
+      }
     },
     async createList(listTitle, listDescription, date) {
       this.loading = true
@@ -81,7 +102,33 @@ export const useListStore = defineStore('listStore', {
       } finally {
         this.loading = false
       }
+    },
+    async updateListTitleAndDescription(listId, newTitle, newDescription, updateDate) {
+      this.loading = true
+      try {
+        const listRef = doc(listDb, 'lists', listId)
+        const listSnap = await getDoc(listRef)
+        if (!listSnap.exists()) {
+          throw new Error("List doesn't exist")
+        }
+        if (listSnap.data().ownerId !== auth.currentUser.uid) {
+          throw new Error('No permission to update this list')
+        }
+        await updateDoc(listRef, {
+          title: newTitle,
+          description: newDescription,
+          lastUpdatedDate: updateDate
+        })
+        this.lists = this.lists.map((list) => {
+          list.listId === listId
+            ? { ...list, title: newTitle, description: newDescription, lastUpdatedDate: updateDate }
+            : list
+        })
+      } catch (error) {
+        console.error(error.message)
+      } finally {
+        this.loading = false
+      }
     }
-  },
-  persist: true
+  }
 })

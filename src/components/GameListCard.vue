@@ -5,7 +5,6 @@ const props = defineProps({
 
 import { computed } from "vue";
 import { useListStore } from "../stores/listStore";
-const listStore = useListStore();
 
 const gamesQuantityText = computed(() => {
   return props.list.games.length === 1 ? "1 game" : `${props.list.games.length} games`;

@@ -1,52 +1,59 @@
 <script setup>
-import { ref, watch } from "vue";
-import router from "@/router/index"
+import { ref, onMounted, watch } from "vue";
+import router from "@/router/index";
 import { useRoute } from "vue-router";
-import { auth } from "@/../firebaseConfig";
-import { onAuthStateChanged } from "firebase/auth";
 import GameListContentInfo from "@/components/GameListContentInfo.vue";
 import GameListContentGames from "@/components/GameListContentGames.vue";
 import { useListStore } from "@/stores/listStore";
 const listStore = useListStore();
 const route = useRoute();
-
-//fetch lists from the current user
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    await listStore.getLists(user.uid);
-  }
-});
-
-const lists = listStore.lists;
-const list = ref({});
 const listId = route.params.id;
 
-watch(lists, () => {
-  list.value = listStore.getListById(listId);
+const list = ref({});
+const title = ref("");
+const description = ref("");
+onMounted(async () => {
+  list.value = await listStore.getListById(listId);
+  title.value = list.value.title;
+  description.value = list.value.description;
 });
 
-const editMode = ref(false)
-
+const editMode = ref(false);
 const onDelete = () => {
-  const response = confirm(`Are you sure you want to delete "${list.value.title}"?`);
-  if (!response) return;
-  listStore.deleteList(listId);
-  router.push("/home")
+const response = confirm(`Are you sure you want to delete "${title.value}"?`);
+  if (response) {
+    listStore.deleteList(listId);
+    router.push("/home");
+  }
+};
+
+const getUpdatedTitle = (newTitle) => {
+    list.value.title = newTitle
+};
+const getUpdatedDescription = (newDescription) => {
+  list.value.description = newDescription;
 };
 
 const onSave = () => {
-  editMode.value = false
-}
-
-
+  editMode.value = false;
+  const date = new Date().toLocaleString();
+  listStore.updateListTitleAndDescription(listId, list.value.title, list.value.description, date);
+  list.value.lastUpdatedDate = date;
+};
 </script>
 
 <template>
-  {{ editMode }}
-  <button type="button" @click="editMode = true">Edit list</button>
+  <button type="button" @click="editMode = true" @sendUpdatedTitle="getUpdatedTitle">
+    Edit list
+  </button>
   <button type="button" @click="onDelete">Delete list</button>
   <button type="button" @click="onSave" v-if="editMode">Save</button>
 
-  <GameListContentInfo :list="list" :editing="editMode"/>
-  <GameListContentGames :list="list" :editing="editMode"/>
+  <GameListContentInfo
+    :list="list"
+    :editing="editMode"
+    @sendUpdatedTitle="getUpdatedTitle"
+    @sendUpdatedDescription="getUpdatedDescription"
+  />
+  <GameListContentGames :list="list" :editing="editMode" />
 </template>

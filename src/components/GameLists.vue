@@ -1,12 +1,12 @@
 <script setup>
-const props = defineProps({
-  lists: Array,
-});
+import { useListStore } from "../stores/listStore";
+const listStore = useListStore();
+const lists = listStore.lists
 
 import GameListCard from "./GameListCard.vue";
 import { computed } from "vue";
 
-const areThereNoLists = computed(() => props.lists.length === 0);
+const areThereNoLists = computed(() => lists.length === 0);
 </script>
 
 <template>
