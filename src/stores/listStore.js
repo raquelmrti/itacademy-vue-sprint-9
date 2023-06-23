@@ -15,7 +15,8 @@ import { auth, listDb } from '../../firebaseConfig'
 export const useListStore = defineStore('listStore', {
   state: () => ({
     lists: [],
-    loading: true
+    loading: true,
+
   }),
   // getters: {
   //   sortedLists: (state) => state.lists.sort((a, b) => b.creationDate - a.creationDate)
@@ -129,6 +130,32 @@ export const useListStore = defineStore('listStore', {
       } finally {
         this.loading = false
       }
-    }
+    },
+
+    async updateListGames(listId, games) {
+      this.loading = true
+      try {
+        const listRef = doc(listDb, 'lists', listId)
+        const listSnap = await getDoc(listRef)
+        if (!listSnap.exists()) {
+          throw new Error("List doesn't exist")
+        }
+        if (listSnap.data().ownerId !== auth.currentUser.uid) {
+          throw new Error('No permission to update this list')
+        }
+        await updateDoc(listRef, {
+          games: [...games]
+        })
+        this.lists = this.lists.map((list) => {
+          list.listId === listId
+            ? { ...list, title: newTitle, description: newDescription, lastUpdatedDate: updateDate }
+            : list
+        })
+      } catch (error) {
+        console.error(error.message)
+      } finally {
+        this.loading = false
+      }
+    },
   }
 })

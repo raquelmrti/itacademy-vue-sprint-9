@@ -20,7 +20,7 @@ onMounted(async () => {
 
 const editMode = ref(false);
 const onDelete = () => {
-const response = confirm(`Are you sure you want to delete "${title.value}"?`);
+const response = confirm(`Are you sure you want to delete "${list.value.title}"?`);
   if (response) {
     listStore.deleteList(listId);
     router.push("/home");

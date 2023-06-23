@@ -1,9 +1,10 @@
 <script setup>
-import { computed, watch, ref } from "vue";
+import { computed, ref } from "vue";
 const props = defineProps({
   list: Object,
   editing: Boolean
 });
+import AddGameToList from './AddGameToList.vue'
 
 // using the optional chaining operation ?. because the data
 // isn't immediately ready
@@ -14,6 +15,8 @@ const gamesArrLength = computed(() => {
 const games = computed(() => {
   return props.list?.games || ref([])
 });
+
+const showModal = ref(false);
 </script>
 
 <template>
@@ -27,5 +30,7 @@ const games = computed(() => {
       <p>{{ game?.summary }}</p>
     </div>
   </template>
-  <button type="button">Add new game</button>
+  <button type="button" @click="showModal = true">Add new game</button>
+  <AddGameToList v-if="showModal" @closeModal="showModal = false" />
+
 </template>
